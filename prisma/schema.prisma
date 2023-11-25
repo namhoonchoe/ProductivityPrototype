@@ -29,48 +29,70 @@ model Boards {
 }
 
 model Board {
-  id        String @id @default(uuid())
-  boards    Boards @relation(fields: [boards_id], references: [id])
-  boards_id String
-  tasks     Task[]
+  id         String   @id @default(uuid())
+  board_name String
+  category   Category @default(DO)
+  gen_date   DateTime
+  boards     Boards   @relation(fields: [boards_id], references: [id])
+  boards_id  String
+  tasks      Task[]
 }
 
 model Task {
-  id       String    @id @default(uuid())
-  board    Board     @relation(fields: [board_id], references: [id])
-  board_id String
-  comments Comment[]
+  id               String    @id @default(uuid())
+  board            Board     @relation(fields: [board_id], references: [id])
+  board_id         String
+  task_title       String
+  task_description String
+  start_date       DateTime
+  due_date         DateTime
+  progress         Progress  @default(TODO)
+  comments         Comment[]
 }
 
 model Comment {
-  id      String @id @default(uuid())
-  task    Task   @relation(fields: [task_id], references: [id])
-  task_id String
+  id           String   @id @default(uuid())
+  task         Task     @relation(fields: [task_id], references: [id])
+  task_id      String
+  comment      String
+  gen_time     DateTime
+  last_editted DateTime
 }
 
 model Schedules {
   id        String     @id @default(uuid())
-  user      User       @relation(fields: [user_id], references: [id])
-  user_id   String     @unique
   schedules Schedule[]
+
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id String @unique
 }
 
 model Schedule {
-  id           String    @id @default(uuid())
-  schedules    Schedules @relation(fields: [schedules_id], references: [id])
-  schedules_id String
-  place        Place?
+  id              String    @id @default(uuid())
+  schedule_name   String
+  schedule_detail String
+  start_date      DateTime
+  due_date        DateTime
+  schedules       Schedules @relation(fields: [schedules_id], references: [id])
+  schedules_id    String
+  place           Place?
 }
 
 model Place {
   id          String   @id @default(uuid())
   schdule     Schedule @relation(fields: [schedule_id], references: [id])
   schedule_id String   @unique
+  latitude    Float
+  longtitude  Float
 }
 
 model Statistics {
-  id String @id @default(uuid())
-
+  id                String @id @default(uuid())
+  count_in_progress Int
+  count_todo        Int
+  count_done        Int
+  count_sc_today    Int
+  count_sc_weekly   Int
   user    User   @relation(fields: [user_id], references: [id])
   user_id String @unique
 }
@@ -81,4 +103,17 @@ model Pomodoro {
   cycle_count Int
   user        User   @relation(fields: [user_id], references: [id])
   user_id     String @unique
+}
+
+enum Progress {
+  TODO
+  INPROGRESS
+  DONE
+}
+
+enum Category {
+  DO
+  Schedule
+  DELEGATE
+  DELETE
 }
